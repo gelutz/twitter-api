@@ -9,3 +9,11 @@
 - Tweet (Criação / exclusão)
 - Like / Desfazer "Like"
 - Retweet
+
+
+### Iniciando projeto:
+
+
+
+> Modo dev:
+- yarn prisma && yarn prisma init
