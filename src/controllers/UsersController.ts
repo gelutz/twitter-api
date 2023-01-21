@@ -1,14 +1,20 @@
 import { Request, Response } from "express"
-import { Controller } from "../@types/Controller"
+import { User } from "../entities/User"
 
-class UsersController implements Controller {
-	async create(req: Request, res: Response): Promise<Response> {
-		const data = req.body
+export class UsersController {
+	static async create(req: Request, res: Response): Promise<Response> {
+		try {
+			await User.create(req.body)
+		} catch (err) {
+			if (err instanceof Error) {
+				return res.status(400).send({
+					message: err.message
+				})
+			}
+		}
 
-		console.log(data)
-
-		return res.status(200).send({message: 'ok', data})
+		// return res.status(200).send({message: 'ok', newUserId})
+		return res.status(200).send({ message: 'ok' })
 	}
 }
 
-export {UsersController}

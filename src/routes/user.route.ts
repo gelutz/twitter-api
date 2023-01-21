@@ -1,9 +1,11 @@
 import {Router} from 'express'
-import UsersController from '../controllers/UsersController'
+import {UsersController} from '../controllers/UsersController'
 
 const routes = Router()
+routes.use('/user',
+	Router()
+		.post('/create', 	UsersController.create)
+		// .get('/index', 		UsersController.index)
+	)
 
-routes.post('/create', UsersController.create)
-routes.post('/validate', testController)
-
-export { routes as AuthRouter }
+export { routes as UserRouter }

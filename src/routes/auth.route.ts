@@ -1,9 +1,8 @@
 import {Router} from 'express'
+import { AuthController } from '../controllers/AuthController'
 
 const routes = Router()
-const testController = (): number => 1
 
-routes.post('/login', testController)
-routes.post('/validate', testController)
+routes.post('/login', AuthController.login)
 
 export { routes as AuthRouter }
