@@ -1,0 +1,43 @@
+version: "3.7"
+
+services:
+  # api:
+  #   image: node:12-alpine
+  #   container_name: news-api
+  #   tty: true
+  #   stdin_open: true
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - ${SERVER_PORT}:${SERVER_PORT}
+  #   working_dir: /api
+  #   volumes:
+  #     - ./app/api/:/api
+  #     - ./.env:/api/.env
+  #     - nm_api:/app/api/node_modules
+  #   command: [ "-c", "yarn && yarn start" ]
+  #   entrypoint: sh
+  db:
+    image: postgres:alpine
+    container_name: db
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+    volumes:
+      - postgres:/var/lib/postresql/data
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    networks:
+      database:
+        ipv4_address: 10.1.1.10
+
+networks:
+  database:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.1.1.0/24"
+
+volumes:
+  postgres:
