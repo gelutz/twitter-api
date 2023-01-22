@@ -3,6 +3,11 @@ import { Request, Response } from "express"
 import { Tweet } from "../entities/Tweet"
 
 export class TweetsController {
+	static async seed(_: Request, res: Response): Promise<Response> {
+		await Tweet.seed()
+
+		return res.status(200).send({ message: 'ok' })
+	}
 
 	static async feed(req: Request, res: Response): Promise<Response> {
 		const userId = req.params.login
@@ -13,11 +18,11 @@ export class TweetsController {
 	static async create(req: Request, res: Response): Promise<Response> {
 		try {
 			const {
-				userId,
+				login,
 				text
 			} = req.body
 
-			await Tweet.create({ userId, text })
+			await Tweet.create({ login, text })
 
 		} catch (err) {
 			if (err instanceof Error) {
@@ -34,14 +39,22 @@ export class TweetsController {
 	static async likeOrDislike(req: Request, res: Response): Promise<Response> {
 		try {
 			const {
-				userId,
+				login,
 				tweetId
 			} = req.body
 
 			const prisma = new PrismaClient()
+
+			const user = await prisma.user.findFirst({
+				where: { login },
+				select: {
+					id: true
+				}
+			})
+
 			const exists = await prisma.likes.findFirst({
 				where: {
-					userId,
+					userId: user.id,
 					AND: {
 						tweetId
 					}
@@ -51,7 +64,7 @@ export class TweetsController {
 			if (exists)
 				await Tweet.dislike(exists.id)
 			else
-				await Tweet.like({ userId, tweetId })
+				await Tweet.like({ login, tweetId })
 
 		} catch (err) {
 			if (err instanceof Error) {
