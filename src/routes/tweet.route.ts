@@ -7,6 +7,7 @@ const routes = Router()
 
 routes.post('/create', TweetsController.create)
 routes.post('/sendLike', TweetsController.likeOrDislike)
+routes.post('/retweet', TweetsController.retweet)
 
 const tweetRouter = Router()
 tweetRouter.use('/tweet', [bearerAuth, checkLogin], routes)

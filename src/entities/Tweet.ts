@@ -11,16 +11,36 @@ type LikeParams = {
 	tweetId: likes['tweetId']
 }
 
-type FeedResponse = {
+type TTweet = {
 	tweetId: string;
 	user: string;
 	text: string;
 	likes: number;
-	order: number;
-}[]
+	reweet?: TRetweet
+}
+
+type TRetweet = {
+	tweetId: string
+	user: string
+	text?: string
+	retweetId: string
+}
 
 export class Tweet {
-	static async showFeed(): Promise<FeedResponse> {
+	static async retweet(userId: string, tweetId: string, text: string): Promise<tweet> {
+		return new Promise((resolve, reject) => {
+			prisma.tweet.create({
+				data: {
+					userId,
+					text,
+					retweetId: tweetId
+				},
+			}).then(resolve).catch(reject)
+		})
+
+	}
+
+	static async showFeed(): Promise<TTweet[]> {
 		const tweets = await prisma.tweet.findMany({
 			include: {
 				_count: {
@@ -33,19 +53,33 @@ export class Tweet {
 						login: true
 					}
 				},
+				retweet: {
+					select: {
+						id: true,
+						userId: true,
+						text: true,
+						retweetId: true
+					}
+				}
 			},
 			orderBy: {
 				createdAt: 'desc'
 			}
 		})
 
-		const feedObject = tweets.map((tweet, index) => {
+		const feedObject: TTweet[] = tweets.map((tweet) => {
 			return {
 				tweetId: tweet.id,
 				user: tweet.user.login,
 				text: tweet.text,
 				likes: tweet._count.likes,
-				order: index
+				retweet: tweet.retweet,
+				// reweet: {
+				// 	tweetId: tweet.retweet.id,
+				// 	user: tweet.retweet.user.login,
+				// 	text: tweet.retweet.text,
+				// 	likes: tweet.retweet._count.likes,
+				// }
 			}
 		})
 

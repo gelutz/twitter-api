@@ -40,11 +40,10 @@ export class User {
 	}
 
 	static async getByLogin(login: string): Promise<user> {
-		return await prisma.user.findFirst({
-			where: {
-				login
-			}
+		return await prisma.user.findFirstOrThrow({
+			where: { login }
 		})
+
 	}
 
 	static async seed(): Promise<boolean> {

@@ -11,7 +11,6 @@ export function checkLogin(req: Request, res: Response, next: NextFunction): Res
 		login = req.body.login
 	}
 
-	console.log(req.params, req.body, login)
 	const token = authorization.replaceAll("Bearer ", "")
 	const decoded = decode(token, { complete: true })
 

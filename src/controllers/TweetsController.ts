@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client"
+import { ok } from "assert"
 import { Request, Response } from "express"
 import { Tweet } from "../entities/Tweet"
+import { User } from "../entities/User"
 
 export class TweetsController {
 	static async seed(_: Request, res: Response): Promise<Response> {
@@ -30,7 +32,6 @@ export class TweetsController {
 			})
 		}
 
-		// return res.status(200).send({message: 'ok', newUserId})
 		return res.status(200).send({ message: 'ok' })
 	}
 
@@ -43,12 +44,7 @@ export class TweetsController {
 
 			const prisma = new PrismaClient()
 
-			const user = await prisma.user.findFirstOrThrow({
-				where: { login },
-				select: {
-					id: true
-				}
-			})
+			const user = await User.getByLogin(login)
 
 			const exists = await prisma.likes.findFirstOrThrow({
 				where: {
@@ -69,6 +65,19 @@ export class TweetsController {
 		}
 
 		return res.status(200).send({ message: 'ok' })
+	}
+
+	static async retweet(req: Request, res: Response): Promise<Response> {
+		const {
+			login,
+			tweetId,
+			text
+		} = req.body
+
+		const user = await User.getByLogin(login)
+		const newTweet = Tweet.retweet(user.id, tweetId, text)
+
+		return res.status(200).send({ message: ok, tweet: newTweet })
 	}
 }
 

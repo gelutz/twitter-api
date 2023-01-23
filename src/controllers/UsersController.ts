@@ -24,7 +24,7 @@ export class UsersController {
 	static async seed(_: Request, res: Response): Promise<Response> {
 		await User.seed()
 
-		return res.sendStatus(200)
+		return res.send()
 	}
 }
 
