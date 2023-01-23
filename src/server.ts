@@ -4,7 +4,7 @@ import cors from 'cors'
 import 'dotenv/config'
 
 import { Routes } from './routes'
-import { xPowered } from './middlewares/xpowered'
+import { xPowered } from './middlewares/Xpowered'
 
 const app = express()
 const port = process.env.API_PORT

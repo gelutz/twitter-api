@@ -20,26 +20,36 @@ type FeedResponse = {
 }[]
 
 export class Tweet {
-	static async seed(): Promise<boolean> {
-		const users = await prisma.user.findMany({
-			select: {
-				id: true,
-				login: true
+	static async showFeed(): Promise<FeedResponse> {
+		const tweets = await prisma.tweet.findMany({
+			include: {
+				_count: {
+					select: {
+						likes: true
+					}
+				},
+				user: {
+					select: {
+						login: true
+					}
+				},
+			},
+			orderBy: {
+				createdAt: 'desc'
 			}
 		})
 
-		const tweets = users.map((user, index) => {
+		const feedObject = tweets.map((tweet, index) => {
 			return {
-				userId: user.id,
-				text: `Olá mundo ${index}`
+				tweetId: tweet.id,
+				user: tweet.user.login,
+				text: tweet.text,
+				likes: tweet._count.likes,
+				order: index
 			}
 		})
 
-		await prisma.tweet.createMany({
-			data: tweets
-		})
-
-		return true
+		return feedObject
 	}
 
 	static async create({ login, text }: TweetCreateParams): Promise<tweet> {
@@ -69,6 +79,14 @@ export class Tweet {
 		})
 	}
 
+	static async delete(tweetId: tweet['id']): Promise<tweet> {
+		return await prisma.tweet.delete({
+			where: {
+				id: tweetId
+			}
+		})
+	}
+
 	static async like({ userId, tweetId }: LikeParams): Promise<likes> {
 
 		return await prisma.likes.create({
@@ -87,32 +105,25 @@ export class Tweet {
 		})
 	}
 
-	static async showFeed(): Promise<FeedResponse> {
-		const tweets = await prisma.tweet.findMany({
-			include: {
-				_count: {
-					select: {
-						likes: true
-					}
-				},
-				user: {
-					select: {
-						login: true
-					}
-				},
+	static async seed(): Promise<boolean> {
+		const users = await prisma.user.findMany({
+			select: {
+				id: true,
+				login: true
 			}
 		})
 
-		const feedObject = tweets.map((tweet, index) => {
+		const tweets = users.map((user, index) => {
 			return {
-				tweetId: tweet.id,
-				user: tweet.user.login,
-				text: tweet.text,
-				likes: tweet._count.likes,
-				order: index
+				userId: user.id,
+				text: `Olá mundo ${index}`
 			}
 		})
 
-		return feedObject
+		await prisma.tweet.createMany({
+			data: tweets
+		})
+
+		return true
 	}
 }

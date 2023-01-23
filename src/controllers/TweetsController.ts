@@ -65,7 +65,7 @@ export class TweetsController {
 				await Tweet.like({ userId: user.id, tweetId })
 
 		} catch (err) {
-			return res.status(400).send({ message: err.meta.message })
+			return res.status(400).send({ message: err })
 		}
 
 		return res.status(200).send({ message: 'ok' })
