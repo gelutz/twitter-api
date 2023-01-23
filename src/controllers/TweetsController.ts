@@ -5,10 +5,10 @@ import { Tweet } from "../entities/Tweet"
 import { User } from "../entities/User"
 
 export class TweetsController {
-	static async seed(_: Request, res: Response): Promise<Response> {
+	static async seed(_: Request, __: Response): Promise<boolean> {
 		await Tweet.seed()
 
-		return res.sendStatus(200)
+		return true
 	}
 
 	static async feed(req: Request, res: Response): Promise<Response> {
