@@ -19,14 +19,16 @@
 		"typescript": "~4.9"
 	},
 	"scripts": {
+		"predev": "yarn swagger",
 		"dev": "tsnd src/server.ts",
-		"migrate": "prisma migrate dev && yarn prisma generate",
+		"lint": "eslint . --ext .ts",
+		"prebuild": "yarn lint && yarn swagger",
+		"build": "tsc -p tsconfig.json",
 		"prestart": "yarn migrate",
 		"start": "node build/src/server.js",
-		"build": "tsc -p tsconfig.json",
-		"prebuild": "npm run lint",
-		"lint": "eslint . --ext .ts",
-		"connect": "docker exec -it db psql -Uadmin -d twitter"
+		"migrate": "prisma migrate dev && yarn prisma generate",
+		"connect": "docker exec -it db psql -Uadmin -d twitter",
+		"swagger": "yarn tsoa spec"
 	},
 	"dependencies": {
 		"@prisma/client": "^4.9.0",
@@ -36,6 +38,7 @@
 		"express": "^4.18.2",
 		"jsonwebtoken": "^9.0.0",
 		"swagger-jsdoc": "^6.2.8",
-		"swagger-ui-express": "^4.6.0"
+		"swagger-ui-express": "^4.6.0",
+		"tsoa": "^5.0.0"
 	}
 }
