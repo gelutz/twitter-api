@@ -1,4 +1,4 @@
-import { prisma, PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@prisma/client"
 import { ok } from "assert"
 import { Request, Response } from "express"
 import { Tweet } from "../entities/Tweet"
@@ -32,7 +32,7 @@ export class TweetsController {
 			})
 		}
 
-		return res.status(200).send({ message: 'ok' })
+		return res.status(201).send({ message: 'ok' })
 	}
 
 	static async likeOrDislike(req: Request, res: Response): Promise<Response> {
@@ -41,6 +41,10 @@ export class TweetsController {
 				login,
 				tweetId
 			} = req.body
+
+			if (!Tweet.exists(tweetId)) {
+				return res.status(404).send({ message: "Tweet não encontrado!" })
+			}
 
 			const prisma = new PrismaClient()
 
@@ -75,6 +79,10 @@ export class TweetsController {
 			text
 		} = req.body
 
+		if (!Tweet.exists(tweetId)) {
+			return res.status(404).send({ message: "Tweet não encontrado!" })
+		}
+
 		const user = await User.getByLogin(login)
 		const newTweet = Tweet.retweet(user.id, tweetId, text)
 
@@ -94,7 +102,17 @@ export class TweetsController {
 	}
 
 	static async delete(req: Request, res: Response): Promise<Response> {
-		const { tweetId } = req.body
+		const { login, tweetId } = req.body
+
+		if (!Tweet.exists(tweetId)) {
+			return res.status(404).send({ message: "Tweet não encontrado!" })
+		}
+
+		const tweetUser = await Tweet.getTweetsUserLogin(tweetId)
+
+		if (tweetUser != login) {
+			return res.status(401).send({ message: "Você não é o autor do tweet" })
+		}
 
 		const deleted = await Tweet.delete(tweetId)
 

@@ -170,4 +170,29 @@ export class Tweet {
 		return true
 	}
 
+	static async getTweetsUserLogin(tweetId: tweets['id']): Promise<string> {
+		const tweet = await prisma.tweets.findFirst({
+			include: {
+				user: {
+					select: {
+						login: true
+					}
+				}
+			},
+			where: {
+				id: tweetId
+			}
+		})
+
+		return tweet.user.login
+	}
+
+	static async exists(tweetId: tweets['id']): Promise<boolean> {
+		return !!(await prisma.tweets.findFirst({
+			where: {
+				id: tweetId
+			}
+		}))
+	}
+
 }

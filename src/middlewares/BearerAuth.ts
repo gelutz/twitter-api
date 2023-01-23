@@ -5,6 +5,10 @@ import jwt, { JsonWebTokenError } from "jsonwebtoken";
 export function bearerAuth(req: Request, res: Response, next: NextFunction): Response | void {
 	const { authorization } = req.headers;
 
+	if (typeof authorization != "string") {
+		return res.status(401).send({ message: "Não está autorizado" })
+	}
+
 	const token = authorization.replace("Bearer ", "")
 
 	if (token === "") {
