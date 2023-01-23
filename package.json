@@ -21,12 +21,12 @@
 	"scripts": {
 		"dev": "tsnd src/server.ts",
 		"lint": "eslint . --ext .ts",
-		"prebuild": "yarn lint && yarn swagger",
+		"prebuild": "yarn lint",
 		"build": "tsc -p tsconfig.json",
 		"prestart": "yarn migrate",
 		"start": "node build/src/server.js",
 		"migrate": "prisma migrate dev && yarn prisma generate",
-		"connect": "docker exec -it db psql -Uadmin -d twitter"
+		"connect": "docker exec -it twitter-db psql -Uadmin -d twitter"
 	},
 	"dependencies": {
 		"@prisma/client": "^4.9.0",

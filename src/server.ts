@@ -4,7 +4,6 @@ import cors from 'cors'
 import 'dotenv/config'
 
 import { Routes } from './routes'
-import { xPowered } from './middlewares/Xpowered'
 
 const app = express()
 const port = process.env.API_PORT
@@ -12,6 +11,6 @@ const port = process.env.API_PORT
 app.use(cors())
 app.use(express.json())
 app.use(Routes)
-app.use(xPowered)
+// app.use(xPowered)
 
 app.listen(port, () => console.log(`Server ouvindo na porta ${port}`))

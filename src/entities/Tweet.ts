@@ -122,7 +122,6 @@ export class Tweet {
 	}
 
 	static async like({ userId, tweetId }: LikeParams): Promise<likes> {
-
 		return await prisma.likes.create({
 			data: {
 				userId: userId,

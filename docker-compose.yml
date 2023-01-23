@@ -2,24 +2,26 @@ version: "3.7"
 
 services:
   # api:
-  #   image: node:12-alpine
-  #   container_name: news-api
+  #   image: node:14-alpine
+  #   container_name: twitter-api
   #   tty: true
   #   stdin_open: true
   #   depends_on:
-  #     - db
+  #     - twitterdb
   #   ports:
-  #     - ${SERVER_PORT}:${SERVER_PORT}
+  #     - ${API_PORT}:${API_PORT}
   #   working_dir: /api
   #   volumes:
-  #     - ./app/api/:/api
+  #     - ./:/api
   #     - ./.env:/api/.env
-  #     - nm_api:/app/api/node_modules
-  #   command: [ "-c", "yarn && yarn start" ]
-  #   entrypoint: sh
-  db:
+  #   # command: [ "-c", "yarn && yarn build && yarn start" ]
+  #   # entrypoint: sh
+  #   networks:
+  #     database:
+  #       ipv4_address: 10.1.1.11
+  twitterdb:
     image: postgres:alpine
-    container_name: db
+    container_name: twitter-db
     environment:
       POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -31,18 +33,6 @@ services:
     networks:
       database:
         ipv4_address: 10.1.1.10
-  # swagger:
-  #   image: swaggerapi/swagger-ui
-  #   environment:
-  #     SWAGGER_JSON: /swagger.json
-  #     BASE_URL: /docs
-  #   ports:
-  #     - 80:8080
-  #   volumes:
-  #     - ./swagger-logs:/var/logs/swagger
-  #   networks:
-  #     database:
-  #       ipv4_address: 10.1.1.11
 networks:
   database:
     ipam:
@@ -52,4 +42,3 @@ networks:
 
 volumes:
   postgres:
-  swagger:

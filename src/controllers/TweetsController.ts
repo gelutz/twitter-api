@@ -46,7 +46,7 @@ export class TweetsController {
 
 			const user = await User.getByLogin(login)
 
-			const exists = await prisma.likes.findFirstOrThrow({
+			const exists = await prisma.likes.findFirst({
 				where: {
 					userId: user.id,
 					AND: {
@@ -61,6 +61,7 @@ export class TweetsController {
 				await Tweet.like({ userId: user.id, tweetId })
 
 		} catch (err) {
+			console.log(err)
 			return res.status(400).send({ message: err })
 		}
 
