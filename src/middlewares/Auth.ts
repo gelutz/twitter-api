@@ -1,35 +1,32 @@
 
 import { Request, Response, NextFunction } from "express";
-// import jwt, { JsonWebTokenError } from "jsonwebtoken";
-// import UnauthorizedError from "../errors/UnauthorizedError";
-// import TokenExpiredError from "../errors/TokenExpired";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
 
-export function bearerAuth(req: Request, res: Response, next: NextFunction) {
-    const { authorization } = req.headers;
+export function bearerAuth(req: Request, res: Response, next: NextFunction): Response | void {
+	const { authorization } = req.headers;
 
-    if (!authorization) {
-        throw new UnauthorizedError();
-    }
+	if (!authorization) {
+		return res.status(401).send({ message: "Não está autorizado" })
+	}
 
-    const token = authorization.replace("Bearer ", "");
-    try {
-        jwt.verify(token, process.env.JWT_KEY!);
-    } catch (err) {
-        if (err instanceof JsonWebTokenError) {
-            if (err.message === "Token expirado") {
-                throw new TokenExpiredError("access");
-            }
-            // TODO adicionar tratação de erro de token que não é válido
-        }
-    }
+	const token = authorization.replace("Bearer ", "");
+	try {
+		jwt.verify(token, process.env.JWT_KEY);
+	} catch (err) {
+		if (err instanceof JsonWebTokenError) {
+			if (err.message === "Token expirado") {
+				return res.status(401).send({ message: "O token está expirado. Favor refazer o login." })
+			}
+		}
+	}
 
-    next();
+	next();
 }
 
-export function optionalAuth(req: Request, res: Response, next: NextFunction) {
-    if (req.headers.authorization) {
-        bearerAuth(req, res, next);
-    } else {
-        next();
-    }
+export function optionalAuth(req: Request, res: Response, next: NextFunction): void {
+	if (req.headers.authorization) {
+		bearerAuth(req, res, next);
+	} else {
+		next();
+	}
 }

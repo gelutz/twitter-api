@@ -17,10 +17,14 @@ export class UsersController {
 		return res.status(200).send({ message: 'ok' })
 	}
 
+	static async all(_: Request, res: Response): Promise<Response> {
+		return res.send({ users: await User.findAll() })
+	}
+
 	static async seed(_: Request, res: Response): Promise<Response> {
 		await User.seed()
 
-		return res.status(200).send({ message: 'ok' })
+		return res.sendStatus(200)
 	}
 }
 

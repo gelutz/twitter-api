@@ -23,13 +23,14 @@ export class Tweet {
 	static async seed(): Promise<boolean> {
 		const users = await prisma.user.findMany({
 			select: {
+				id: true,
 				login: true
 			}
 		})
 
 		const tweets = users.map((user, index) => {
 			return {
-				login: user.login,
+				userId: user.id,
 				text: `Olá mundo ${index}`
 			}
 		})

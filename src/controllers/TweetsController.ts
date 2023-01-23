@@ -6,7 +6,7 @@ export class TweetsController {
 	static async seed(_: Request, res: Response): Promise<Response> {
 		await Tweet.seed()
 
-		return res.status(200).send({ message: 'ok' })
+		return res.sendStatus(200)
 	}
 
 	static async feed(req: Request, res: Response): Promise<Response> {
@@ -25,11 +25,9 @@ export class TweetsController {
 			await Tweet.create({ login, text })
 
 		} catch (err) {
-			if (err instanceof Error) {
-				return res.status(400).send({
-					message: err.message
-				})
-			}
+			return res.status(400).send({
+				message: err.meta.message
+			})
 		}
 
 		// return res.status(200).send({message: 'ok', newUserId})
@@ -45,14 +43,14 @@ export class TweetsController {
 
 			const prisma = new PrismaClient()
 
-			const user = await prisma.user.findFirst({
+			const user = await prisma.user.findFirstOrThrow({
 				where: { login },
 				select: {
 					id: true
 				}
 			})
 
-			const exists = await prisma.likes.findFirst({
+			const exists = await prisma.likes.findFirstOrThrow({
 				where: {
 					userId: user.id,
 					AND: {
@@ -64,14 +62,10 @@ export class TweetsController {
 			if (exists)
 				await Tweet.dislike(exists.id)
 			else
-				await Tweet.like({ login, tweetId })
+				await Tweet.like({ userId: user.id, tweetId })
 
 		} catch (err) {
-			if (err instanceof Error) {
-				return res.status(400).send({
-					message: err.message
-				})
-			}
+			return res.status(400).send({ message: err.meta.message })
 		}
 
 		return res.status(200).send({ message: 'ok' })

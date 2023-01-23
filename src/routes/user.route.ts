@@ -1,11 +1,11 @@
-import {Router} from 'express'
-import {UsersController} from '../controllers/UsersController'
+import { Router } from 'express'
+import { UsersController } from '../controllers/UsersController'
 
 const routes = Router()
-routes.use('/user',
-	Router()
-		.post('/create', 	UsersController.create)
-		// .get('/index', 		UsersController.index)
-	)
 
-export { routes as UserRouter }
+routes.post('/create', UsersController.create)
+routes.get('/all', UsersController.all)
+const userRouter = Router()
+userRouter.use('/user', routes)
+
+export { userRouter as UserRouter }
