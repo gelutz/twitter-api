@@ -1,7 +1,4 @@
 import { Router } from 'express'
-
-import { serve } from 'swagger-ui-express'
-import { setup } from '../config/swaggerOptions'
 import { TweetsController } from '../controllers/TweetsController'
 import { UsersController } from '../controllers/UsersController'
 import { bearerAuth } from '../middlewares/BearerAuth'
@@ -21,8 +18,5 @@ routes.get('/seed', (req, res) => {
 	UsersController.seed(req, res)
 	TweetsController.seed(req, res)
 })
-
-// rota do swagger
-routes.use('/docs', serve, setup)
 
 export { routes as Routes }
