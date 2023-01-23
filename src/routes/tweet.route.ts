@@ -5,7 +5,9 @@ import { checkLogin } from '../middlewares/CheckLogin'
 
 const routes = Router()
 
-routes.post('/create', TweetsController.create)
+routes.post('/', TweetsController.create)
+routes.get('/:id', TweetsController.index)
+routes.delete('/:id', TweetsController.delete)
 routes.post('/sendLike', TweetsController.likeOrDislike)
 routes.post('/retweet', TweetsController.retweet)
 

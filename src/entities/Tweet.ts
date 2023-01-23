@@ -1,13 +1,13 @@
-import { PrismaClient, tweet, likes, user } from "@prisma/client";
+import { PrismaClient, tweets, likes, users } from "@prisma/client";
 const prisma = new PrismaClient()
 
 type TweetCreateParams = {
-	login: user['login']
-	text: tweet['text']
+	login: users['login']
+	text: tweets['text']
 }
 
 type LikeParams = {
-	userId: user['id']
+	userId: users['id']
 	tweetId: likes['tweetId']
 }
 
@@ -27,9 +27,19 @@ type TRetweet = {
 }
 
 export class Tweet {
-	static async retweet(userId: string, tweetId: string, text: string): Promise<tweet> {
+	static async index(id: tweets['id']): Promise<tweets> {
 		return new Promise((resolve, reject) => {
-			prisma.tweet.create({
+			prisma.tweets.findFirst({
+				where: {
+					id
+				}
+			}).then(resolve).catch(reject)
+		})
+
+	}
+	static async retweet(userId: string, tweetId: string, text: string): Promise<tweets> {
+		return new Promise((resolve, reject) => {
+			prisma.tweets.create({
 				data: {
 					userId,
 					text,
@@ -41,7 +51,7 @@ export class Tweet {
 	}
 
 	static async showFeed(): Promise<TTweet[]> {
-		const tweets = await prisma.tweet.findMany({
+		const tweets = await prisma.tweets.findMany({
 			include: {
 				_count: {
 					select: {
@@ -86,8 +96,8 @@ export class Tweet {
 		return feedObject
 	}
 
-	static async create({ login, text }: TweetCreateParams): Promise<tweet> {
-		const user = await prisma.user.findFirst({
+	static async create({ login, text }: TweetCreateParams): Promise<tweets> {
+		const user = await prisma.users.findFirst({
 			where: { login },
 			select: {
 				id: true
@@ -97,7 +107,7 @@ export class Tweet {
 		// não consegui pegar o erro com um try/catch
 		// mas usando promises e o .catch consegui transformar em um erro comum
 		return new Promise((resolve, reject) => {
-			prisma.tweet.create({
+			prisma.tweets.create({
 				data: {
 					userId: user.id,
 					text: text
@@ -113,8 +123,8 @@ export class Tweet {
 		})
 	}
 
-	static async delete(tweetId: tweet['id']): Promise<tweet> {
-		return await prisma.tweet.delete({
+	static async delete(tweetId: tweets['id']): Promise<tweets> {
+		return await prisma.tweets.delete({
 			where: {
 				id: tweetId
 			}
@@ -139,7 +149,7 @@ export class Tweet {
 	}
 
 	static async seed(): Promise<boolean> {
-		const users = await prisma.user.findMany({
+		const users = await prisma.users.findMany({
 			select: {
 				id: true,
 				login: true
@@ -153,10 +163,11 @@ export class Tweet {
 			}
 		})
 
-		await prisma.tweet.createMany({
+		await prisma.tweets.createMany({
 			data: tweets
 		})
 
 		return true
 	}
+
 }

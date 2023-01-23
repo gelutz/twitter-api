@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt'
-import { PrismaClient, user } from '@prisma/client'
+import { PrismaClient, users } from '@prisma/client'
 import { verifyEmail } from '../utils/EmailVerifier'
 const prisma = new PrismaClient()
 
 export class User {
-	static async create(data: Omit<user, "id">): Promise<user> {
+	static async create(data: Omit<users, "id">): Promise<users> {
 		return new Promise((resolve, reject) => {
 			const {
 				name,
@@ -17,7 +17,7 @@ export class User {
 				throw Error("Invalid email.")
 			}
 			const hash = bcrypt.hashSync(password, 8)
-			prisma.user.create({
+			prisma.users.create({
 				data: {
 					name,
 					login,
@@ -35,12 +35,12 @@ export class User {
 		})
 	}
 
-	static async findAll(): Promise<user[]> {
-		return await prisma.user.findMany()
+	static async findAll(): Promise<users[]> {
+		return await prisma.users.findMany()
 	}
 
-	static async getByLogin(login: string): Promise<user> {
-		const user = await prisma.user.findFirst({
+	static async getByLogin(login: string): Promise<users> {
+		const user = await prisma.users.findFirst({
 			where: { login }
 		})
 		return user
@@ -50,7 +50,7 @@ export class User {
 	static async seed(): Promise<boolean> {
 
 		const hash = bcrypt.hashSync("123", 8)
-		await prisma.user.createMany({
+		await prisma.users.createMany({
 			data: [
 				{
 					name: "User #1",

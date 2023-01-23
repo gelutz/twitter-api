@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client"
+import { prisma, PrismaClient } from "@prisma/client"
 import { ok } from "assert"
 import { Request, Response } from "express"
 import { Tweet } from "../entities/Tweet"
@@ -79,6 +79,30 @@ export class TweetsController {
 		const newTweet = Tweet.retweet(user.id, tweetId, text)
 
 		return res.status(200).send({ message: ok, tweet: newTweet })
+	}
+
+	static async queryById(req: Request, res: Response): Promise<Response> {
+		const tweetId = req.params.id
+
+		const tweet = await Tweet.index(tweetId)
+
+		if (!tweet) {
+			return res.status(404).send({ message: 'Tweet não encontrado' })
+		}
+
+		return res.status(200).send({ message: 'ok', tweet })
+	}
+
+	static async delete(req: Request, res: Response): Promise<Response> {
+		const { tweetId } = req.body
+
+		const deleted = await Tweet.delete(tweetId)
+
+		if (!deleted) {
+			return res.status(404).send({ message: 'Houve um erro ao tentar excluir o tweet' })
+		}
+
+		return res.status(200).send({ message: 'Tweet excluído.', })
 	}
 }
 

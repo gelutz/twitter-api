@@ -3,8 +3,9 @@ import { UsersController } from '../controllers/UsersController'
 
 const routes = Router()
 
-routes.post('/create', UsersController.create)
-routes.get('/all', UsersController.all)
+routes.post('/', UsersController.create)
+routes.get('/', UsersController.all)
+routes.get('/:login', UsersController.queryByLogin)
 const userRouter = Router()
 userRouter.use('/user', routes)
 

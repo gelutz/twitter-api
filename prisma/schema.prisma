@@ -9,7 +9,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
+model users {
   id        String   @id @default(uuid()) @db.Uuid
   name      String
   email     String   @unique
@@ -18,32 +18,32 @@ model user {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tweets tweet[]
+  tweets tweets[]
   likes  likes[]
 }
 
-model tweet {
+model tweets {
   // forma performática de criar uuid com o postgres
   // id String @id @default(dbgenerated("(concat('usr_', gen_random_uuid()))::TEXT"))
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user      user?    @relation(fields: [userId], references: [id])
+  user      users?   @relation(fields: [userId], references: [id])
   userId    String?  @db.Uuid
   text      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  retweetId String? @unique @db.Uuid
-  reweetRef tweet?  @relation("Retweet", fields: [retweetId], references: [id])
-  retweet   tweet[] @relation("Retweet")
+  retweetId String?  @unique @db.Uuid
+  reweetRef tweets?  @relation("Retweet", fields: [retweetId], references: [id])
+  retweet   tweets[] @relation("Retweet")
 
   likes likes[]
 }
 
 model likes {
   id        Int      @id @default(autoincrement())
-  user      user?    @relation(fields: [userId], references: [id])
+  user      users?   @relation(fields: [userId], references: [id])
   userId    String?  @db.Uuid
-  tweet     tweet?   @relation(fields: [tweetId], references: [id])
+  tweet     tweets?  @relation(fields: [tweetId], references: [id])
   tweetId   String?  @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
