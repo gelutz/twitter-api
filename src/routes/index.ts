@@ -1,6 +1,7 @@
 import { Router } from 'express'
-import swaggerUi from 'swagger-ui-express'
 
+import { serve } from 'swagger-ui-express'
+import { setup } from '../config/swaggerOptions'
 import { TweetsController } from '../controllers/TweetsController'
 import { UsersController } from '../controllers/UsersController'
 import { bearerAuth } from '../middlewares/BearerAuth'
@@ -22,10 +23,6 @@ routes.get('/seed', (req, res) => {
 })
 
 // rota do swagger
-routes.use('/docs', swaggerUi.serve, swaggerUi.setup(undefined, {
-	swaggerOptions: {
-		url: "/swagger.json",
-	},
-}))
+routes.use('/docs', serve, setup)
 
 export { routes as Routes }
