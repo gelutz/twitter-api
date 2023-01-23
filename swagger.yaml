@@ -1,0 +1,257 @@
+openapi: 3.0.1
+info:
+  title: Twitter API - Weef
+  description: |-
+    Essa API foi feita por Gabriel Lutz como teste para a entrevista da empresa Weef.
+  contact:
+    email: gabriel.lutz5@gmail.com
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://10.1.1.11:3000
+paths:
+  /seed:
+    get:
+      summary: Seed do banco
+      description: Endpoints que cria alguns usuários e alguns tweets para facilitar os testes durante desenvolvimento.
+      responses:
+        '200':
+          description: OK
+  /feed:
+    get:
+      summary: Mostra o feed de tweets
+      description: Busca todos os tweets de todos os usuários, ordenando-os de mais novo para mais antigo. Para cada tweet, também mostra seu número de likes e seus respectivos retweets.
+      operationId: feed
+      responses:
+        '200':
+          description: Usuários retornados
+          content:
+            feed:
+              example: [{
+                "tweetId": "15878155-109b-45c9-b2f4-392bca5a3c5d",
+                "user": "user-2",
+                "text": "Olá mundo 1",
+                "likes": 0,
+                "retweet": [{
+                  "id": "8cccee18-725e-438a-85c9-3ac39b24ea08",
+                  "userId": "2231e3a8-8dff-419a-b2fe-2bfa5c68ad87",
+                  "text": "Retweet #1",
+                  "retweetId": "15878155-109b-45c9-b2f4-392bca5a3c5d"
+                }]
+              }]
+  /tweet/:id:
+    get:
+      summary: Busca um tweet
+      operationId: queryById
+      responses:
+        '200':
+          description: Tweet encontrado
+          content:
+            tweet:
+              example: {
+                "tweetId": "15878155-109b-45c9-b2f4-392bca5a3c5d",
+                "user": "user-2",
+                "text": "Olá mundo 1",
+                "likes": 0
+              }
+        '401':
+          description: Não está autorizado
+          content:
+            message:
+              example: Não está autorizado
+        '404':
+          description: Tweet não encontrado
+          content:
+            message:
+              example: Tweet não encontrado
+  /tweet:
+    post:
+      summary: Cria um tweet
+      responses:
+        '200':
+          description: Usuários retornados
+          content:
+            message:
+              example: "ok"
+        '401':
+          description: Não está autorizado
+    delete:
+      summary: Exclúi um tweet
+      responses:
+        '200':
+          description: Tweet excluído
+          content:
+            message:
+              example: "Tweet excluído"
+        '401':
+          description: Não está autorizado
+      
+  /tweet/sendLike:
+    post:
+      summary: Dá like ou dislike em um tweet
+      operationId: likeOrDislike
+      responses:
+        '200':
+          description: Like/Dislike ok
+          content:
+            message: 
+              example: ok
+        '401':
+          description: Não está autorizado
+          content:
+            message:
+              example: Não está autorizado
+        '404':
+          description: Tweet não encontrado
+          content:
+            message:
+              example: Tweet não encontrado
+  /tweet/retweet:
+    post:
+      summary: Faz o retweet de outro tweet
+      description: O retweet é apenas um tweet com a coluna tweetId preenchida, também utiliza os mesmos dados que um tweet normal e aparece no feed. 
+      operationId: retweet
+      responses:
+        '200':
+          description: Retwittado com sucesso
+          content:
+            tweet: 
+              example: {}
+        '401':
+          description: Não está autorizado
+          content:
+            message:
+              example: Não está autorizado
+        '404':
+          description: Tweet não encontrado
+          content:
+            message:
+              example: Tweet não encontrado
+  /login:
+    post:
+      summary: Faz o login do usuário
+      operationId: login
+      responses:
+        '200':
+          description: Usuários retornados
+          content:
+            token:
+              example: "eyJhbGciOiJIUzI1NiIsInR5c"
+            message:
+              example: "ok"
+        '401':
+          description: Login inválido
+  /user/:login:
+    get:
+      summary: Busca o usuário pelo login
+      operationId: queryByLogin
+      responses:
+        '200':
+          description: User encontrado
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/Users'
+        '400':
+          description: Login inválido
+  /user:
+    get:
+      summary: Busca todos os usuários
+      operationId: all
+      responses:
+        '200':
+          description: Usuários retornados
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/Users'
+    post:
+      summary: Cria um usuário
+      operationId: create
+      responses:
+        '201':
+            description: Usuário criado
+            content:
+              application/json:
+                  schema:
+                    $ref: '#/components/schemas/Users'
+        '400':
+          description: Dados inválidos recebidos
+          content:
+            message:
+              example: Dados inválidos recebidos
+components:
+  schemas:
+    Users:
+      type: object
+      properties:
+        id:
+          type: string
+          format: utf-8
+          example: "98f5b0ea-489a-48c3-a3ba-01e1cc9c9ffd"
+        name:
+          type: string
+          format: utf-8
+          example: "gabriel"
+        email:
+          type: string
+          format: utf-8
+          example: "gabriel@gmail.com"
+        login:
+          type: string
+          format: utf-8
+          example: "glutz"
+        password:
+          type: string
+          format: utf-8
+          example: "gabriel@gmail.com"
+        createdAt:
+          type: object
+          format: datetime
+          example: "2023-01-23 20:30:32.353"
+        updatedAt:
+          type: object
+          format: datetime
+          example: "2023-01-23 20:30:32.353"
+        tweets:
+          $ref: '#/components/schemas/Tweets'
+        likes:
+          $ref: '#/components/schemas/Likes'
+    Tweets:
+      type: object
+      properties:
+        id:
+          type: string
+          format: utf-8
+          example: "98f5b0ea-489a-48c3-a3ba-01e1cc9c9ffd"
+        user:
+          $ref: '#/components/schemas/Users'
+        text:
+          type: string
+          format: utf-8
+          example: "Olá mundo!"
+        createdAt:
+          type: object
+          format: datetime
+          example: "2023-01-23 20:30:32.353"
+        updatedAt:
+          type: object
+          format: datetime
+          example: "2023-01-23 20:30:32.353"
+        retweet:
+          $ref: '#/components/schemas/Tweets'
+        likes:
+          $ref: '#/components/schemas/Likes'
+    Likes:
+      type: object
+      properties:
+        id:
+          type: string
+          format: utf-8
+          example: "98f5b0ea-489a-48c3-a3ba-01e1cc9c9ffd"
+        user:
+          $ref: '#/components/schemas/Users'
+        tweet:
+          $ref: '#/components/schemas/Tweets'
